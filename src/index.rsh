@@ -17,11 +17,6 @@ const winner = (rand,hand1, hand2) => {
   else  return DRAW;
 
 };
-// Generates the random number
-const combineRandom = (randomAlice, randomBob) => {
-  const result = randomAlice + randomBob;
-  return result;
-};
 
 
 // Makes the required payment to the winner
@@ -56,11 +51,12 @@ const Player = {
   seeOutcome: Fun([UInt], Null),
   informTimeout: Fun([], Null),
   informNewRound: Fun([], Null),
-  //getRandom: Fun([], UInt),
+
 };
 
 
 export const main = Reach.App(() => {
+// House Interface
 const House = Participant('House', {
     ...Common,
     wager: UInt,
@@ -91,7 +87,7 @@ const House = Participant('House', {
       interact.informTimeout();
     });
   };
-//Alice wager and the deadline for the timeout
+//Alice and Bob accept the rules and pay the wager
   House.only(() => {
     const limit = declassify(interact.limit);
     const trials = declassify(interact.trials);
@@ -112,7 +108,7 @@ const House = Participant('House', {
   Alice.pay(wager);
   commit();
 
-//Bob accepting or rejecting the wager
+
   Bob.only(() => {
     interact.seeRules(limit, trials);
     interact.acceptWager(wager);
@@ -122,7 +118,7 @@ const House = Participant('House', {
   .pay(wager)
     .timeout(relativeTime(deadline), () => closeTo(Alice, informTimeout));
 
-//While loop that loops 3 times  if the users inputs arent correct
+//While loop that loops as long as  the conditions are not met
   var [stage, hand1, hand2 ] = [trials,0,0];
   invariant( balance() == 2 * wager);
 
